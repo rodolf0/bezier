@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
 	"image"
-	"image/png"
 	"image/color"
 	"image/draw"
+	"image/png"
+	"os"
 )
 
 // draw a bezier curve with it's control points
@@ -14,9 +14,9 @@ func drawCurve(img draw.Image, c color.Color, pts ...Point) {
 	var f = NewCurve(pts...)
 
 	for prev, t := f(0.0), 1; t <= segments; t++ {
-		var cur = f(float32(t)/float32(segments))
-		line(int(cur.x), img.Bounds().Max.Y - 1 - int(cur.y),
-				 int(prev.x), img.Bounds().Max.Y - 1 - int(prev.y), c, img)
+		var cur = f(float32(t) / float32(segments))
+		line(int(cur.x), img.Bounds().Max.Y-1-int(cur.y),
+			int(prev.x), img.Bounds().Max.Y-1-int(prev.y), c, img)
 		prev = cur
 	}
 }
@@ -24,8 +24,8 @@ func drawCurve(img draw.Image, c color.Color, pts ...Point) {
 // connect points with lines
 func drawPolyline(img draw.Image, c color.Color, pts ...Point) {
 	for j := 1; j < len(pts); j++ {
-		line(int(pts[j-1].x), img.Bounds().Max.Y - 1 - int(pts[j-1].y),
-				 int(pts[j].x), img.Bounds().Max.Y - 1 - int(pts[j].y), c, img)
+		line(int(pts[j-1].x), img.Bounds().Max.Y-1-int(pts[j-1].y),
+			int(pts[j].x), img.Bounds().Max.Y-1-int(pts[j].y), c, img)
 	}
 }
 
