@@ -15,8 +15,7 @@ func drawCurve(img draw.Image, c color.Color, pts ...Point) {
 
 	for prev, t := f(0.0), 1; t <= segments; t++ {
 		var cur = f(float32(t) / float32(segments))
-		line(int(cur.x), img.Bounds().Max.Y-1-int(cur.y),
-			int(prev.x), img.Bounds().Max.Y-1-int(prev.y), c, img)
+		line(int(cur.x), int(cur.y), int(prev.x), int(prev.y), c, img)
 		prev = cur
 	}
 }
@@ -24,8 +23,7 @@ func drawCurve(img draw.Image, c color.Color, pts ...Point) {
 // connect points with lines
 func drawPolyline(img draw.Image, c color.Color, pts ...Point) {
 	for j := 1; j < len(pts); j++ {
-		line(int(pts[j-1].x), img.Bounds().Max.Y-1-int(pts[j-1].y),
-			int(pts[j].x), img.Bounds().Max.Y-1-int(pts[j].y), c, img)
+		line(int(pts[j-1].x), int(pts[j-1].y), int(pts[j].x), int(pts[j].y), c, img)
 	}
 }
 
@@ -36,27 +34,24 @@ func whiteImage() *image.RGBA {
 }
 
 func main() {
-	var pts = []Point{{0, 0}, {499, 100}, {0, 100}, {0, 400}, {499, 499}}
-	var pts2 = []Point{{0, 10}, {150, 500}, {300, 30}, {450, 500}}
-	var pts3 = []Point{{0, 0}, {256, 499}, {499, 0}}
-	var pts4 = []Point{{0, 499}, {499, 255}}
-	var pts5 = []Point{{0, 0}, {1000, 499}, {-500, 499}, {499, 0}}
+	// http://jeremykun.com/2013/05/11/bezier-curves-and-picasso/
+	var pts = [][]Point{
+		{{180, 280}, {183, 268}, {186, 256}, {189, 244}}, // front leg
+		{{191, 244}, {290, 244}, {300, 230}, {339, 245}}, // tummy
+		{{340, 246}, {350, 290}, {360, 300}, {355, 210}}, // back leg
+		{{353, 210}, {370, 207}, {380, 196}, {375, 193}}, // tail
+		{{375, 193}, {310, 220}, {190, 220}, {164, 205}}, // back
+		{{164, 205}, {135, 194}, {135, 265}, {153, 275}}, // ear start
+		{{153, 275}, {168, 275}, {170, 180}, {150, 190}}, // ear end + head
+		{{149, 190}, {122, 214}, {142, 204}, {85, 240}},  // nose bridge
+		{{86, 240}, {100, 247}, {125, 233}, {140, 238}},  // mouth
+	}
 
 	var img = whiteImage()
-	drawCurve(img, color.RGBA{255, 200, 50, 255}, pts...)
-	drawPolyline(img, color.RGBA{30, 255, 30, 255}, pts...)
-
-	drawCurve(img, color.RGBA{50, 50, 255, 255}, pts2...)
-	drawPolyline(img, color.RGBA{255, 0, 0, 255}, pts2...)
-
-	drawCurve(img, color.RGBA{50, 50, 50, 255}, pts3...)
-	drawPolyline(img, color.RGBA{128, 128, 128, 255}, pts3...)
-
-	drawCurve(img, color.RGBA{50, 250, 250, 255}, pts4...)
-	drawPolyline(img, color.RGBA{50, 50, 100, 255}, pts4...)
-
-	drawCurve(img, color.RGBA{140, 200, 78, 255}, pts5...)
-	drawPolyline(img, color.RGBA{89, 165, 100, 255}, pts5...)
+	for _, curve := range pts {
+		drawCurve(img, color.RGBA{40, 40, 50, 255}, curve...)
+		/*drawPolyline(img, color.RGBA{230, 230, 230, 255}, curve...)*/
+	}
 
 	out, _ := os.Create("__test-out.png")
 	png.Encode(out, img)
